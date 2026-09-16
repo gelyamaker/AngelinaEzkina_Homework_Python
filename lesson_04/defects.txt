@@ -1,0 +1,1324 @@
+Начало каждого баг-репорта можно найти по метке BR.
+
+BR-1. Название: Все буквенные символы кроме первого становятся строчными в функции capitalize при выполнении команды pytest.
+Описание: При проверке слов, где есть заглавные буквы не на месте первого символа (input_str[0]), все заглавные буквы (кроме первого символа) становятся строчными.
+
+Шаги для воспроизведения:
+1. Открыть файл с кодом (string_utils.py).
+2. Написать или вставить следующий код в тестовый файл (test_string_utils.py):
+import pytest
+from string_utils import StringUtils
+
+
+string_utils = StringUtils()
+
+
+@pytest.mark.parametrize("input_str, expected", [
+    ("Ночь. Улица. Фонарь. Аптека.", "Ночь. Улица. Фонарь. Аптека."),
+    ("fINISH", "FINISH"),
+])
+def test_capitalize_positive(input_str, expected):
+    assert string_utils.capitalize(input_str) == expected
+3. Запустить тесты в терминале с помощью команды pytest.
+
+Ожидаемый результат (ОР):
+1. Функция должна возвращать строку без изменений при input_str = "Ночь. Улица. Фонарь. Аптека.".
+2. Функция должна возвращать строку "FINISH" при input_str = "fINISH".
+Фактический результат (ФР):
+1. Функция возвращает строку "Ночь. улица. фонарь. аптека." при input_str = "Ночь. Улица. Фонарь. Аптека.".
+2. Функция возвращает строку "Finish" при input_str = "fINISH".
+
+Серьезность: S3 Major
+Приоритет: Средний
+
+Окружение: ОС - Windows 11, Версия Python - 3.14, Версия pytest - 9.1.1
+
+Логи:
+
+1. 'Ночь. Улица. Фонарь. Аптека.'
+input_str = 'Ночь. Улица. Фонарь. Аптека.', expected = 'Ночь. Улица. Фонарь. Аптека.'
+
+    @pytest.mark.parametrize("input_str, expected", [
+        ("Ночь. Улица. Фонарь. Аптека.", "Ночь. Улица. Фонарь. Аптека."),
+        ("fINISH", "FINISH"),
+    ])
+    def test_capitalize_positive(input_str, expected):
+>       assert string_utils.capitalize(input_str) == expected
+E       AssertionError: assert 'Ночь. улица. фонарь. аптека.' == 'Ночь. Улица. Фонарь. Аптека.'
+E
+E         - Ночь. Улица. Фонарь. Аптека.
+E         ?       ^      ^       ^
+E         + Ночь. улица. фонарь. аптека.
+E         ?       ^      ^       ^
+
+lesson_04\test_string_utils.py:13: AssertionError
+
+2. 'fINISH'
+input_str = 'fINISH', expected = 'FINISH'
+
+    @pytest.mark.parametrize("input_str, expected", [
+        ("Ночь. Улица. Фонарь. Аптека.", "Ночь. Улица. Фонарь. Аптека."),
+        ("fINISH", "FINISH"),
+    ])
+    def test_capitalize_positive(input_str, expected):
+>       assert string_utils.capitalize(input_str) == expected
+E       AssertionError: assert 'Finish' == 'FINISH'
+E
+E         - FINISH
+E         + Finish
+
+lesson_04\test_string_utils.py:13: AssertionError
+
+BR-2. Название: Отсутствует атрибут capitalize у переменной input_str типа, отличного от строкового, в функции capitalize при выполнении команды pytest.
+Описание: В методе capitalize класса StringUtils отсутствует проверка на соответствие переменной input_str типу str. Происходит изменение типа на другой (NoneType, int, float, bool, list, tuple, dict), в котором нет атрибута capitalize.
+
+Шаги для воспроизведения:
+1. Открыть файл с кодом (string_utils.py).
+2. Написать или вставить следующий код в тестовый файл (test_string_utils.py):
+import pytest
+from string_utils import StringUtils
+
+
+string_utils = StringUtils()
+
+
+@pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
+def test_capitalize_negative_no_string(input_str):
+    # Ожидается ошибка: Неверный тип данных
+    with pytest.raises(TypeError):
+        string_utils.capitalize(input_str)
+3. Запустить тесты в терминале с помощью команды pytest.
+
+Ожидаемый результат (ОР): Вызов ошибки TypeError "Неверный тип данных, должен быть 'str'."
+Фактический результат (ФР): Вызов ошибки AttributeError
+при input_str = None - 'NoneType' object has no attribute 'capitalize'
+при input_str = 123 - 'int' object has no attribute 'capitalize'
+при input_str = 4.56 - 'float' object has no attribute 'capitalize'
+при input_str = True - 'bool' object has no attribute 'capitalize'
+при input_str = [] - 'list' object has no attribute 'capitalize'
+при input_str = () - 'tuple' object has no attribute 'capitalize'
+при input_str = {} - 'dict' object has no attribute 'capitalize'
+
+Серьезность: S4 Minor
+Приоритет: Низкий
+
+Окружение: ОС - Windows 11, Версия Python - 3.14, Версия pytest - 9.1.1
+
+Логи:
+
+1. None
+input_str = None
+
+    @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
+    def test_capitalize_negative_no_string(input_str):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.capitalize(input_str)
+
+lesson_04\test_string_utils.py:12:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000001A9A766EF90>, string = None
+
+    def capitalize(self, string: str) -> str:
+        """
+        Принимает на вход текст, делает первую букву заглавной
+        и возвращает этот же текст
+        Пример: `capitilize("skypro") -> "Skypro"`
+        """
+>       return string.capitalize()
+               ^^^^^^^^^^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'capitalize'
+
+lesson_04\string_utils.py:12: AttributeError
+
+2. 123
+input_str = 123
+
+    @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
+    def test_capitalize_negative_no_string(input_str):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.capitalize(input_str)
+
+lesson_04\test_string_utils.py:12:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000001F923D6EF90>, string = 123
+
+    def capitalize(self, string: str) -> str:
+        """
+        Принимает на вход текст, делает первую букву заглавной
+        и возвращает этот же текст
+        Пример: `capitilize("skypro") -> "Skypro"`
+        """
+>       return string.capitalize()
+               ^^^^^^^^^^^^^^^^^
+E       AttributeError: 'int' object has no attribute 'capitalize'
+
+lesson_04\string_utils.py:12: AttributeError
+
+3. 4.56
+input_str = 4.56
+
+    @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
+    def test_capitalize_negative_no_string(input_str):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.capitalize(input_str)
+
+lesson_04\test_string_utils.py:12:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000001F923D6EF90>, string = 4.56
+
+    def capitalize(self, string: str) -> str:
+        """
+        Принимает на вход текст, делает первую букву заглавной
+        и возвращает этот же текст
+        Пример: `capitilize("skypro") -> "Skypro"`
+        """
+>       return string.capitalize()
+               ^^^^^^^^^^^^^^^^^
+E       AttributeError: 'float' object has no attribute 'capitalize'
+
+lesson_04\string_utils.py:12: AttributeError
+
+4. True
+input_str = True
+
+    @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
+    def test_capitalize_negative_no_string(input_str):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.capitalize(input_str)
+
+lesson_04\test_string_utils.py:12:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000001F923D6EF90>, string = True
+
+    def capitalize(self, string: str) -> str:
+        """
+        Принимает на вход текст, делает первую букву заглавной
+        и возвращает этот же текст
+        Пример: `capitilize("skypro") -> "Skypro"`
+        """
+>       return string.capitalize()
+               ^^^^^^^^^^^^^^^^^
+E       AttributeError: 'bool' object has no attribute 'capitalize'
+
+lesson_04\string_utils.py:12: AttributeError
+
+5. []
+input_str = []
+
+    @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
+    def test_capitalize_negative_no_string(input_str):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.capitalize(input_str)
+
+lesson_04\test_string_utils.py:12:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000001F923D6EF90>, string = []
+
+    def capitalize(self, string: str) -> str:
+        """
+        Принимает на вход текст, делает первую букву заглавной
+        и возвращает этот же текст
+        Пример: `capitilize("skypro") -> "Skypro"`
+        """
+>       return string.capitalize()
+               ^^^^^^^^^^^^^^^^^
+E       AttributeError: 'list' object has no attribute 'capitalize'
+
+lesson_04\string_utils.py:12: AttributeError
+
+6. ()
+input_str = ()
+
+    @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
+    def test_capitalize_negative_no_string(input_str):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.capitalize(input_str)
+
+lesson_04\test_string_utils.py:12:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000001F923D6EF90>, string = ()
+
+    def capitalize(self, string: str) -> str:
+        """
+        Принимает на вход текст, делает первую букву заглавной
+        и возвращает этот же текст
+        Пример: `capitilize("skypro") -> "Skypro"`
+        """
+>       return string.capitalize()
+               ^^^^^^^^^^^^^^^^^
+E       AttributeError: 'tuple' object has no attribute 'capitalize'
+
+lesson_04\string_utils.py:12: AttributeError
+
+7. {}
+input_str = {}
+
+    @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
+    def test_capitalize_negative_no_string(input_str):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.capitalize(input_str)
+
+lesson_04\test_string_utils.py:12:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000001F923D6EF90>, string = {}
+
+    def capitalize(self, string: str) -> str:
+        """
+        Принимает на вход текст, делает первую букву заглавной
+        и возвращает этот же текст
+        Пример: `capitilize("skypro") -> "Skypro"`
+        """
+>       return string.capitalize()
+               ^^^^^^^^^^^^^^^^^
+E       AttributeError: 'dict' object has no attribute 'capitalize'
+
+lesson_04\string_utils.py:12: AttributeError
+
+BR-3. Название: Отсутствует атрибут startswith у переменной input_str типа, отличного от строкового, в функции trim при выполнении команды pytest.
+Описание: В методе trim класса StringUtils отсутствует проверка на соответствие переменной input_str типу str. Происходит изменение типа на другой (NoneType, int, float, bool, list, tuple, dict), в котором нет атрибута startswith.
+
+Шаги для воспроизведения:
+1. Открыть файл с кодом (string_utils.py).
+2. Написать или вставить следующий код в тестовый файл (test_string_utils.py):
+import pytest
+from string_utils import StringUtils
+
+
+string_utils = StringUtils()
+
+
+@pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
+def test_trim_negative_no_string(input_str):
+    # Ожидается ошибка: Неверный тип данных
+    with pytest.raises(TypeError):
+        string_utils.trim(input_str)
+3. Запустить тесты в терминале с помощью команды pytest.
+
+Ожидаемый результат (ОР): Вызов ошибки TypeError "Неверный тип данных, должен быть 'str'."
+Фактический результат (ФР): Вызов ошибки AttributeError
+при input_str = None - 'NoneType' object has no attribute 'startswith'
+при input_str = 123 - 'int' object has no attribute 'startswith'
+при input_str = 4.56 - 'float' object has no attribute 'startswith'
+при input_str = True - 'bool' object has no attribute 'startswith'
+при input_str = [] - 'list' object has no attribute 'startswith'
+при input_str = () - 'tuple' object has no attribute 'startswith'
+при input_str = {} - 'dict' object has no attribute 'startswith'
+
+Серьезность: S4 Minor
+Приоритет: Низкий
+
+Окружение: ОС - Windows 11, Версия Python - 3.14, Версия pytest - 9.1.1
+
+Логи:
+
+1. None
+input_str = None
+
+    @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
+    def test_trim_negative_no_string(input_str):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.trim(input_str)
+
+lesson_04\test_string_utils.py:12:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000001FFF019EF90>, string = None
+
+    def trim(self, string: str) -> str:
+        """
+        Принимает на вход текст и удаляет пробелы в начале, если они есть
+        Пример: `trim("   skypro") -> "skypro"`
+        """
+        whitespace = " "
+>       while string.startswith(whitespace):
+              ^^^^^^^^^^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'startswith'
+
+lesson_04\string_utils.py:20: AttributeError
+
+2. 123
+input_str = 123
+
+    @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
+    def test_trim_negative_no_string(input_str):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.trim(input_str)
+
+lesson_04\test_string_utils.py:12:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000001FFF019EF90>, string = 123
+
+    def trim(self, string: str) -> str:
+        """
+        Принимает на вход текст и удаляет пробелы в начале, если они есть
+        Пример: `trim("   skypro") -> "skypro"`
+        """
+        whitespace = " "
+>       while string.startswith(whitespace):
+              ^^^^^^^^^^^^^^^^^
+E       AttributeError: 'int' object has no attribute 'startswith'
+
+lesson_04\string_utils.py:20: AttributeError
+
+3. 4.56
+input_str = 4.56
+
+    @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
+    def test_trim_negative_no_string(input_str):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.trim(input_str)
+
+lesson_04\test_string_utils.py:12:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000001FFF019EF90>, string = 4.56
+
+    def trim(self, string: str) -> str:
+        """
+        Принимает на вход текст и удаляет пробелы в начале, если они есть
+        Пример: `trim("   skypro") -> "skypro"`
+        """
+        whitespace = " "
+>       while string.startswith(whitespace):
+              ^^^^^^^^^^^^^^^^^
+E       AttributeError: 'float' object has no attribute 'startswith'
+
+lesson_04\string_utils.py:20: AttributeError
+
+4. True
+input_str = True
+
+    @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
+    def test_trim_negative_no_string(input_str):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.trim(input_str)
+
+lesson_04\test_string_utils.py:12:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000001FFF019EF90>, string = True
+
+    def trim(self, string: str) -> str:
+        """
+        Принимает на вход текст и удаляет пробелы в начале, если они есть
+        Пример: `trim("   skypro") -> "skypro"`
+        """
+        whitespace = " "
+>       while string.startswith(whitespace):
+              ^^^^^^^^^^^^^^^^^
+E       AttributeError: 'bool' object has no attribute 'startswith'
+
+lesson_04\string_utils.py:20: AttributeError
+
+5. []
+input_str = []
+
+    @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
+    def test_trim_negative_no_string(input_str):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.trim(input_str)
+
+lesson_04\test_string_utils.py:12:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000001FFF019EF90>, string = []
+
+    def trim(self, string: str) -> str:
+        """
+        Принимает на вход текст и удаляет пробелы в начале, если они есть
+        Пример: `trim("   skypro") -> "skypro"`
+        """
+        whitespace = " "
+>       while string.startswith(whitespace):
+              ^^^^^^^^^^^^^^^^^
+E       AttributeError: 'list' object has no attribute 'startswith'
+
+lesson_04\string_utils.py:20: AttributeError
+
+6. ()
+input_str = ()
+
+    @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
+    def test_trim_negative_no_string(input_str):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.trim(input_str)
+
+lesson_04\test_string_utils.py:12:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000001FFF019EF90>, string = ()
+
+    def trim(self, string: str) -> str:
+        """
+        Принимает на вход текст и удаляет пробелы в начале, если они есть
+        Пример: `trim("   skypro") -> "skypro"`
+        """
+        whitespace = " "
+>       while string.startswith(whitespace):
+              ^^^^^^^^^^^^^^^^^
+E       AttributeError: 'tuple' object has no attribute 'startswith'
+
+lesson_04\string_utils.py:20: AttributeError
+
+7. {}
+input_str = {}
+
+    @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
+    def test_trim_negative_no_string(input_str):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.trim(input_str)
+
+lesson_04\test_string_utils.py:12:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000001FFF019EF90>, string = {}
+
+    def trim(self, string: str) -> str:
+        """
+        Принимает на вход текст и удаляет пробелы в начале, если они есть
+        Пример: `trim("   skypro") -> "skypro"`
+        """
+        whitespace = " "
+>       while string.startswith(whitespace):
+              ^^^^^^^^^^^^^^^^^
+E       AttributeError: 'dict' object has no attribute 'startswith'
+
+lesson_04\string_utils.py:20: AttributeError
+
+BR-4. Название: Отсутствует ошибка при работе с переменной symbol длиной не в 1 символ, в функции contains при выполнении команды pytest.
+Описание: В методе contains класса StringUtils отсутствует проверка на длину строки в переменной symbol, что позволяет принимать строки, состоящие из нескольких символов, а также пустые строки. Это дает возможность выполнить функцию без вызова ошибки, несмотря на то, что в документации к функции сказано, что symbol - это символ.
+
+Шаги для воспроизведения:
+1. Открыть файл с кодом (string_utils.py).
+2. Написать или вставить следующий код в тестовый файл (test_string_utils.py):
+import pytest
+from string_utils import StringUtils
+
+
+string_utils = StringUtils()
+
+
+@pytest.mark.parametrize("input_str, input_symbol", [
+    ("Я", ""),
+    ("", ""),
+    ("   ", ""),
+    ("Два слова", "Два"),
+    ("Два слова", "слово"),
+])
+def test_contains_negative(input_str, input_symbol):
+    # Ожидается ошибка: длина input_symbol должна быть равна 1
+    with pytest.raises(ValueError):
+        string_utils.contains(input_str, input_symbol)
+3. Запустить тесты в терминале с помощью команды pytest.
+
+Ожидаемый результат (ОР): Вызов ошибки ValueError "Длина input_symbol должна быть равна 1"
+Фактический результат (ФР): Ошибка не вызывается (DID NOT RAISE ValueError).
+
+Серьезность: S4 Minor
+Приоритет: Средний
+
+Окружение: ОС - Windows 11, Версия Python - 3.14, Версия pytest - 9.1.1
+
+Логи:
+
+1. 'Я', ''
+input_str = 'Я', input_symbol = ''
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        ("Я", ""),
+        ("", ""),
+        ("   ", ""),
+        ("Два слова", "Два"),
+        ("Два слова", "слово"),
+    ])
+    def test_contains_negative(input_str, input_symbol):
+        # Ожидается ошибка: длина input_symbol должна быть равна 1
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+lesson_04\test_string_utils.py:17: Failed
+
+2. '', ''
+input_str = '', input_symbol = ''
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        ("Я", ""),
+        ("", ""),
+        ("   ", ""),
+        ("Два слова", "Два"),
+        ("Два слова", "слово"),
+    ])
+    def test_contains_negative(input_str, input_symbol):
+        # Ожидается ошибка: длина input_symbol должна быть равна 1
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+lesson_04\test_string_utils.py:17: Failed
+
+3. '   ', ''
+input_str = '   ', input_symbol = ''
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        ("Я", ""),
+        ("", ""),
+        ("   ", ""),
+        ("Два слова", "Два"),
+        ("Два слова", "слово"),
+    ])
+    def test_contains_negative(input_str, input_symbol):
+        # Ожидается ошибка: длина input_symbol должна быть равна 1
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+lesson_04\test_string_utils.py:17: Failed
+
+4. 'Два слова', 'Два'
+input_str = 'Два слова', input_symbol = 'Два'
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        ("Я", ""),
+        ("", ""),
+        ("   ", ""),
+        ("Два слова", "Два"),
+        ("Два слова", "слово"),
+    ])
+    def test_contains_negative(input_str, input_symbol):
+        # Ожидается ошибка: длина input_symbol должна быть равна 1
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+lesson_04\test_string_utils.py:17: Failed
+
+5. 'Два слова', 'слово'
+input_str = 'Два слова', input_symbol = 'слово'
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        ("Я", ""),
+        ("", ""),
+        ("   ", ""),
+        ("Два слова", "Два"),
+        ("Два слова", "слово"),
+    ])
+    def test_contains_negative(input_str, input_symbol):
+        # Ожидается ошибка: длина input_symbol должна быть равна 1
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+lesson_04\test_string_utils.py:17: Failed
+
+BR-5. Название: Отсутствует атрибут index у переменной input_str типа, отличного от строкового, в функции contains при выполнении команды pytest.
+Описание: В методе contains класса StringUtils отсутствует проверка на соответствие переменной input_str типу str. Происходит изменение типа на другой (NoneType, int, float, bool, dict), в котором нет атрибута index.
+
+Шаги для воспроизведения:
+1. Открыть файл с кодом (string_utils.py).
+2. Написать или вставить следующий код в тестовый файл (test_string_utils.py):
+import pytest
+from string_utils import StringUtils
+
+
+string_utils = StringUtils()
+
+
+@pytest.mark.parametrize("input_str, , input_symbol", [
+    (None, 'a'),
+    (123,  'a'),
+    (4.56, 'a'),
+    (True, 'a'),
+    ({},   'a'),
+])
+def test_contains_negative_no_string(input_str, input_symbol):
+    # Ожидается ошибка: Неверный тип данных
+    with pytest.raises(TypeError):
+        string_utils.contains(input_str, input_symbol)
+3. Запустить тесты в терминале с помощью команды pytest.
+
+Ожидаемый результат (ОР): Вызов ошибки TypeError "Неверный тип данных, должен быть 'str'."
+Фактический результат (ФР): Вызов ошибки AttributeError
+при input_str = None - 'NoneType' object has no attribute 'index'
+при input_str = 123 - 'int' object has no attribute 'index'
+при input_str = 4.56 - 'float' object has no attribute 'index'
+при input_str = True - 'bool' object has no attribute 'index'
+при input_str = {} - 'dict' object has no attribute 'index'
+
+Серьезность: S4 Minor
+Приоритет: Низкий
+
+Окружение: ОС - Windows 11, Версия Python - 3.14, Версия pytest - 9.1.1
+
+Логи:
+
+1. None
+input_str = None, input_symbol = 'a'
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        (None, 'a'),
+        (123,  'a'),
+        (4.56, 'a'),
+        (True, 'a'),
+        ({},   'a'),
+    ])
+    def test_contains_negative_no_string(input_str, input_symbol):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.contains(input_str, input_symbol)
+
+lesson_04\test_string_utils.py:18:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x0000021B27C3EF90>, string = None, symbol = 'a'
+
+    def contains(self, string: str, symbol: str) -> bool:
+        """
+        Возвращает `True`, если строка содержит искомый символ
+        и `False` - если нет
+        Параметры:
+            `string` - строка для обработки
+            `symbol` - искомый символ
+        Пример 1: `contains("SkyPro", "S") -> True`
+        Пример 2: `contains("SkyPro", "U") -> False`
+        """
+        res = False
+        try:
+>           res = string.index(symbol) > -1
+                  ^^^^^^^^^^^^
+E           AttributeError: 'NoneType' object has no attribute 'index'
+
+lesson_04\string_utils.py:36: AttributeError
+
+2. 123
+input_str = 123, input_symbol = 'a'
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        (None, 'a'),
+        (123,  'a'),
+        (4.56, 'a'),
+        (True, 'a'),
+        ({},   'a'),
+    ])
+    def test_contains_negative_no_string(input_str, input_symbol):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.contains(input_str, input_symbol)
+
+lesson_04\test_string_utils.py:18:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x0000021B27C3EF90>, string = 123, symbol = 'a'
+
+    def contains(self, string: str, symbol: str) -> bool:
+        """
+        Возвращает `True`, если строка содержит искомый символ
+        и `False` - если нет
+        Параметры:
+            `string` - строка для обработки
+            `symbol` - искомый символ
+        Пример 1: `contains("SkyPro", "S") -> True`
+        Пример 2: `contains("SkyPro", "U") -> False`
+        """
+        res = False
+        try:
+>           res = string.index(symbol) > -1
+                  ^^^^^^^^^^^^
+E           AttributeError: 'int' object has no attribute 'index'
+
+lesson_04\string_utils.py:36: AttributeError
+
+3. 4.56
+input_str = 4.56, input_symbol = 'a'
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        (None, 'a'),
+        (123,  'a'),
+        (4.56, 'a'),
+        (True, 'a'),
+        ({},   'a'),
+    ])
+    def test_contains_negative_no_string(input_str, input_symbol):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.contains(input_str, input_symbol)
+
+lesson_04\test_string_utils.py:18:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x0000021B27C3EF90>, string = 4.56, symbol = 'a'
+
+    def contains(self, string: str, symbol: str) -> bool:
+        """
+        Возвращает `True`, если строка содержит искомый символ
+        и `False` - если нет
+        Параметры:
+            `string` - строка для обработки
+            `symbol` - искомый символ
+        Пример 1: `contains("SkyPro", "S") -> True`
+        Пример 2: `contains("SkyPro", "U") -> False`
+        """
+        res = False
+        try:
+>           res = string.index(symbol) > -1
+                  ^^^^^^^^^^^^
+E           AttributeError: 'float' object has no attribute 'index'
+
+lesson_04\string_utils.py:36: AttributeError
+
+4. True
+input_str = True, input_symbol = 'a'
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        (None, 'a'),
+        (123,  'a'),
+        (4.56, 'a'),
+        (True, 'a'),
+        ({},   'a'),
+    ])
+    def test_contains_negative_no_string(input_str, input_symbol):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.contains(input_str, input_symbol)
+
+lesson_04\test_string_utils.py:18:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x0000021B27C3EF90>, string = True, symbol = 'a'
+
+    def contains(self, string: str, symbol: str) -> bool:
+        """
+        Возвращает `True`, если строка содержит искомый символ
+        и `False` - если нет
+        Параметры:
+            `string` - строка для обработки
+            `symbol` - искомый символ
+        Пример 1: `contains("SkyPro", "S") -> True`
+        Пример 2: `contains("SkyPro", "U") -> False`
+        """
+        res = False
+        try:
+>           res = string.index(symbol) > -1
+                  ^^^^^^^^^^^^
+E           AttributeError: 'bool' object has no attribute 'index'
+
+lesson_04\string_utils.py:36: AttributeError
+
+5. {}
+input_str = {}, input_symbol = 'a'
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        (None, 'a'),
+        (123,  'a'),
+        (4.56, 'a'),
+        (True, 'a'),
+        ({},   'a'),
+    ])
+    def test_contains_negative_no_string(input_str, input_symbol):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.contains(input_str, input_symbol)
+
+lesson_04\test_string_utils.py:18:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000001F972CAEF90>, string = {}, symbol = 'a'
+
+    def contains(self, string: str, symbol: str) -> bool:
+        """
+        Возвращает `True`, если строка содержит искомый символ
+        и `False` - если нет
+        Параметры:
+            `string` - строка для обработки
+            `symbol` - искомый символ
+        Пример 1: `contains("SkyPro", "S") -> True`
+        Пример 2: `contains("SkyPro", "U") -> False`
+        """
+        res = False
+        try:
+>           res = string.index(symbol) > -1
+                  ^^^^^^^^^^^^
+E           AttributeError: 'dict' object has no attribute 'index'
+
+lesson_04\string_utils.py:36: AttributeError
+
+BR-6. Название: Отсутствует ошибка при работе с переменной input_str типа, отличного от строкового, в функции contains при выполнении команды pytest.
+Описание: В методе contains класса StringUtils отсутствует проверка на соответствие переменной input_str типу str. Происходит изменение типа на другой (list, tuple). В списках и кортежах есть атрибут index, который дает возможность выполнить функцию без вызова ошибки, несмотря на то, что в документации к функции сказано, что symbol - это символ.
+
+Шаги для воспроизведения:
+1. Открыть файл с кодом (string_utils.py).
+2. Написать или вставить следующий код в тестовый файл (test_string_utils.py):
+import pytest
+from string_utils import StringUtils
+
+
+string_utils = StringUtils()
+
+
+@pytest.mark.parametrize("input_str, , input_symbol", [
+    ([],   'a'),
+    ((),   'a'),
+])
+def test_contains_negative_no_string(input_str, input_symbol):
+    # Ожидается ошибка: Неверный тип данных
+    with pytest.raises(TypeError):
+        string_utils.contains(input_str, input_symbol)
+3. Запустить тесты в терминале с помощью команды pytest.
+
+Ожидаемый результат (ОР): Вызов ошибки TypeError "Неверный тип данных, должен быть 'str'."
+Фактический результат (ФР): Ошибка не вызывается (DID NOT RAISE TypeError).
+
+Серьезность: S4 Minor
+Приоритет: Низкий
+
+Окружение: ОС - Windows 11, Версия Python - 3.14, Версия pytest - 9.1.1
+
+Логи:
+
+1. []
+input_str = [], input_symbol = 'a'
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        ([],   'a'),
+        ((),   'a'),
+    ])
+    def test_contains_negative_no_string(input_str, input_symbol):
+        # Ожидается ошибка: Неверный тип данных
+>       with pytest.raises(TypeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE TypeError
+
+lesson_04\test_string_utils.py:14: Failed
+
+2. ()
+input_str = (), input_symbol = 'a'
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        ((),   'a'),
+        ({},   'a'),
+    ])
+    def test_contains_negative_no_string(input_str, input_symbol):
+        # Ожидается ошибка: Неверный тип данных
+>       with pytest.raises(TypeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE TypeError
+
+lesson_04\test_string_utils.py:14: Failed
+
+BR-7. Название: Отсутствует ошибка при работе с переменной symbol - пустой строкой - в функции delete_symbol при выполнении команды pytest.
+Описание: В методе delete_symbol класса StringUtils отсутствует проверка на длину строки в переменной symbol, что позволяет принимать пустые строки. Это дает возможность выполнить функцию без вызова ошибки, несмотря на то, что в документации к функции сказано, что symbol - это подстрока или символ.
+
+Шаги для воспроизведения:
+1. Открыть файл с кодом (string_utils.py).
+2. Написать или вставить следующий код в тестовый файл (test_string_utils.py):
+import pytest
+from string_utils import StringUtils
+
+
+string_utils = StringUtils()
+
+
+@pytest.mark.parametrize("input_str, input_symbol", [
+    ("Я", ""),
+    ("", ""),
+    ("   ", ""),
+])
+def test_delete_symbol_negative(input_str, input_symbol):
+    # Ожидается ошибка: input_symbol не должна быть пустой
+    with pytest.raises(ValueError):
+        string_utils.contains(input_str, input_symbol)
+3. Запустить тесты в терминале с помощью команды pytest.
+
+Ожидаемый результат (ОР): Вызов ошибки ValueError "input_symbol не может быть пустой"
+Фактический результат (ФР): Ошибка не вызывается (DID NOT RAISE ValueError).
+
+Серьезность: S4 Minor
+Приоритет: Средний
+
+Окружение: ОС - Windows 11, Версия Python - 3.14, Версия pytest - 9.1.1
+
+Логи:
+
+1. "Я", "",
+input_str = 'Я', input_symbol = ''
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        ("Я", ""),
+        ("", ""),
+        ("   ", ""),
+    ])
+    def test_delete_symbol_negative(input_str, input_symbol):
+        # Ожидается ошибка: input_symbol не должна быть пустой
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+lesson_04\test_string_utils.py:15: Failed
+
+2. "", ""
+input_str = '', input_symbol = ''
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        ("Я", ""),
+        ("", ""),
+        ("   ", ""),
+    ])
+    def test_delete_symbol_negative(input_str, input_symbol):
+        # Ожидается ошибка: input_symbol не должна быть пустой
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+lesson_04\test_string_utils.py:15: Failed
+
+3. "   ", ""
+input_str = '   ', input_symbol = ''
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        ("Я", ""),
+        ("", ""),
+        ("   ", ""),
+    ])
+    def test_delete_symbol_negative(input_str, input_symbol):
+        # Ожидается ошибка: input_symbol не должна быть пустой
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+lesson_04\test_string_utils.py:15: Failed
+
+BR-8. Название: Отсутствует атрибут index у переменной input_str типа, отличного от строкового, в функции delete_symbol при выполнении команды pytest.
+Описание: В методе delete_symbol класса StringUtils отсутствует проверка на соответствие переменной input_str типу str. Происходит изменение типа на другой (NoneType, int, float, bool, dict), в котором нет атрибута index.
+
+Шаги для воспроизведения:
+1. Открыть файл с кодом (string_utils.py).
+2. Написать или вставить следующий код в тестовый файл (test_string_utils.py):
+import pytest
+from string_utils import StringUtils
+
+
+string_utils = StringUtils()
+
+
+@pytest.mark.parametrize("input_str, input_symbol", [
+    (None, 'a'),
+    (123, 'a'),
+    (4.56, 'a'),
+    (True, 'a'),
+    ({}, 'a'),
+])
+def test_delete_symbol_negative_no_string(input_str, input_symbol):
+    # Ожидается ошибка: Неверный тип данных
+    with pytest.raises(TypeError):
+        string_utils.delete_symbol(input_str, input_symbol)
+3. Запустить тесты в терминале с помощью команды pytest.
+
+Ожидаемый результат (ОР): Вызов ошибки TypeError "Неверный тип данных, должен быть 'str'."
+Фактический результат (ФР): Вызов ошибки AttributeError
+при input_str = None - 'NoneType' object has no attribute 'index'
+при input_str = 123 - 'int' object has no attribute 'index'
+при input_str = 4.56 - 'float' object has no attribute 'index'
+при input_str = True - 'bool' object has no attribute 'index'
+при input_str = {} - 'dict' object has no attribute 'index'
+
+Серьезность: S4 Minor
+Приоритет: Низкий
+
+Окружение: ОС - Windows 11, Версия Python - 3.14, Версия pytest - 9.1.1
+
+Логи:
+
+1. None
+input_str = None, input_symbol = 'a'
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        (None, 'a'),
+        (123, 'a'),
+        (4.56, 'a'),
+        (True, 'a'),
+        ({}, 'a'),
+    ])
+    def test_delete_symbol_negative_no_string(input_str, input_symbol):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.delete_symbol(input_str, input_symbol)
+
+lesson_04\test_string_utils.py:18:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+lesson_04\string_utils.py:51: in delete_symbol
+    if self.contains(string, symbol):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000002728C74EF90>, string = None, symbol = 'a'
+
+    def contains(self, string: str, symbol: str) -> bool:
+        """
+        Возвращает `True`, если строка содержит искомый символ
+        и `False` - если нет
+        Параметры:
+            `string` - строка для обработки
+            `symbol` - искомый символ
+        Пример 1: `contains("SkyPro", "S") -> True`
+        Пример 2: `contains("SkyPro", "U") -> False`
+        """
+        res = False
+        try:
+>           res = string.index(symbol) > -1
+                  ^^^^^^^^^^^^
+E           AttributeError: 'NoneType' object has no attribute 'index'
+
+lesson_04\string_utils.py:36: AttributeError
+
+2. 123
+input_str = 123, input_symbol = 'a'
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        (None, 'a'),
+        (123, 'a'),
+        (4.56, 'a'),
+        (True, 'a'),
+        ({}, 'a'),
+    ])
+    def test_delete_symbol_negative_no_string(input_str, input_symbol):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.delete_symbol(input_str, input_symbol)
+
+lesson_04\test_string_utils.py:18:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+lesson_04\string_utils.py:51: in delete_symbol
+    if self.contains(string, symbol):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000002728C74EF90>, string = 123, symbol = 'a'
+
+    def contains(self, string: str, symbol: str) -> bool:
+        """
+        Возвращает `True`, если строка содержит искомый символ
+        и `False` - если нет
+        Параметры:
+            `string` - строка для обработки
+            `symbol` - искомый символ
+        Пример 1: `contains("SkyPro", "S") -> True`
+        Пример 2: `contains("SkyPro", "U") -> False`
+        """
+        res = False
+        try:
+>           res = string.index(symbol) > -1
+                  ^^^^^^^^^^^^
+E           AttributeError: 'int' object has no attribute 'index'
+
+lesson_04\string_utils.py:36: AttributeError
+
+3. 4.56
+input_str = 4.56, input_symbol = 'a'
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        (None, 'a'),
+        (123, 'a'),
+        (4.56, 'a'),
+        (True, 'a'),
+        ({}, 'a'),
+    ])
+    def test_delete_symbol_negative_no_string(input_str, input_symbol):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.delete_symbol(input_str, input_symbol)
+
+lesson_04\test_string_utils.py:18:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+lesson_04\string_utils.py:51: in delete_symbol
+    if self.contains(string, symbol):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000002728C74EF90>, string = 4.56, symbol = 'a'
+
+    def contains(self, string: str, symbol: str) -> bool:
+        """
+        Возвращает `True`, если строка содержит искомый символ
+        и `False` - если нет
+        Параметры:
+            `string` - строка для обработки
+            `symbol` - искомый символ
+        Пример 1: `contains("SkyPro", "S") -> True`
+        Пример 2: `contains("SkyPro", "U") -> False`
+        """
+        res = False
+        try:
+>           res = string.index(symbol) > -1
+                  ^^^^^^^^^^^^
+E           AttributeError: 'float' object has no attribute 'index'
+
+lesson_04\string_utils.py:36: AttributeError
+
+4. True
+input_str = True, input_symbol = 'a'
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        (None, 'a'),
+        (123, 'a'),
+        (4.56, 'a'),
+        (True, 'a'),
+        ({}, 'a'),
+    ])
+    def test_delete_symbol_negative_no_string(input_str, input_symbol):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.delete_symbol(input_str, input_symbol)
+
+lesson_04\test_string_utils.py:18:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+lesson_04\string_utils.py:51: in delete_symbol
+    if self.contains(string, symbol):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000002728C74EF90>, string = True, symbol = 'a'
+
+    def contains(self, string: str, symbol: str) -> bool:
+        """
+        Возвращает `True`, если строка содержит искомый символ
+        и `False` - если нет
+        Параметры:
+            `string` - строка для обработки
+            `symbol` - искомый символ
+        Пример 1: `contains("SkyPro", "S") -> True`
+        Пример 2: `contains("SkyPro", "U") -> False`
+        """
+        res = False
+        try:
+>           res = string.index(symbol) > -1
+                  ^^^^^^^^^^^^
+E           AttributeError: 'bool' object has no attribute 'index'
+
+lesson_04\string_utils.py:36: AttributeError
+
+5. {}
+input_str = {}, input_symbol = 'a'
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        (None, 'a'),
+        (123, 'a'),
+        (4.56, 'a'),
+        (True, 'a'),
+        ({}, 'a'),
+    ])
+    def test_delete_symbol_negative_no_string(input_str, input_symbol):
+        # Ожидается ошибка: Неверный тип данных
+        with pytest.raises(TypeError):
+>           string_utils.delete_symbol(input_str, input_symbol)
+
+lesson_04\test_string_utils.py:18:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+lesson_04\string_utils.py:51: in delete_symbol
+    if self.contains(string, symbol):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <string_utils.StringUtils object at 0x000002728C74EF90>, string = {}, symbol = 'a'
+
+    def contains(self, string: str, symbol: str) -> bool:
+        """
+        Возвращает `True`, если строка содержит искомый символ
+        и `False` - если нет
+        Параметры:
+            `string` - строка для обработки
+            `symbol` - искомый символ
+        Пример 1: `contains("SkyPro", "S") -> True`
+        Пример 2: `contains("SkyPro", "U") -> False`
+        """
+        res = False
+        try:
+>           res = string.index(symbol) > -1
+                  ^^^^^^^^^^^^
+E           AttributeError: 'dict' object has no attribute 'index'
+
+lesson_04\string_utils.py:36: AttributeError
+
+BR-9. Название: Отсутствует ошибка при работе с переменной input_str типа, отличного от строкового, в функции delete_symbol при выполнении команды pytest.
+Описание: В методе delete_symbol класса StringUtils отсутствует проверка на соответствие переменной input_str типу str. Происходит изменение типа на другой (list, tuple). В списках и кортежах есть атрибут index, который дает возможность выполнить функцию без вызова ошибки, несмотря на то, что в документации к функции сказано, что symbol - это подстрока или символ.
+
+Шаги для воспроизведения:
+1. Открыть файл с кодом (string_utils.py).
+2. Написать или вставить следующий код в тестовый файл (test_string_utils.py):
+import pytest
+from string_utils import StringUtils
+
+
+string_utils = StringUtils()
+
+
+@pytest.mark.parametrize("input_str, input_symbol", [
+    ([], 'a'),
+    ((), 'a'),
+])
+def test_delete_symbol_negative_no_string(input_str, input_symbol):
+    # Ожидается ошибка: Неверный тип данных
+    with pytest.raises(TypeError):
+        string_utils.delete_symbol(input_str, input_symbol)
+3. Запустить тесты в терминале с помощью команды pytest.
+
+Ожидаемый результат (ОР): Вызов ошибки TypeError "Неверный тип данных, должен быть 'str'."
+Фактический результат (ФР): Ошибка не вызывается (DID NOT RAISE TypeError).
+
+Серьезность: S4 Minor
+Приоритет: Низкий
+
+Окружение: ОС - Windows 11, Версия Python - 3.14, Версия pytest - 9.1.1
+
+Логи:
+
+1. []
+input_str = [], input_symbol = 'a'
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        ([], 'a'),
+        ((), 'a'),
+    ])
+    def test_delete_symbol_negative_no_string(input_str, input_symbol):
+        # Ожидается ошибка: Неверный тип данных
+>       with pytest.raises(TypeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE TypeError
+
+lesson_04\test_string_utils.py:14: Failed
+
+2. ()
+input_str = (), input_symbol = 'a'
+
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        ([], 'a'),
+        ((), 'a'),
+    ])
+    def test_delete_symbol_negative_no_string(input_str, input_symbol):
+        # Ожидается ошибка: Неверный тип данных
+>       with pytest.raises(TypeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE TypeError
+
+lesson_04\test_string_utils.py:14: Failed
