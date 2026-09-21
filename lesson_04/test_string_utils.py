@@ -10,8 +10,10 @@ string_utils = StringUtils()
     ("victor", "Victor"),
     ("Apple", "Apple"),
     ("я", "Я"),
-    ("Ночь. Улица. Фонарь. Аптека.", "Ночь. Улица. Фонарь. Аптека."),
-    ("fINISH", "FINISH"),
+    pytest.param("Ночь. Улица. Фонарь. Аптека", "Ночь. Улица. Фонарь. Аптека",
+                 marks=pytest.mark.xfail(strict=True, reason="BR-1")),
+    pytest.param("fINISH", "FINISH",
+                 marks=pytest.mark.xfail(strict=True, reason="BR-1")),
     ("123abc", "123abc"),
     ("", ""),
     ("   ", "   "),
@@ -21,11 +23,12 @@ def test_capitalize_positive(input_str, expected):
     assert string_utils.capitalize(input_str) == expected
 
 
-@pytest.mark.xfail(reason="BR-2", strict=True)
+@pytest.mark.xfail(strict=True,
+                   reason="BR-2: Вместо TypeError летит AttributeError")
 @pytest.mark.negative
 @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
-def test_capitalize_negative_attribute_error(input_str):
-    with pytest.raises(AttributeError):
+def test_capitalize_raises_type_error(input_str):
+    with pytest.raises(TypeError):
         string_utils.capitalize(input_str)
 
 
@@ -39,22 +42,29 @@ def test_capitalize_negative_attribute_error(input_str):
     ("   ", ""),
     ("Два слова", "Два слова"),
     ("", ""),
-    ("\tPython", "Python"),
-    ("\nPython", "Python"),
-    ("\rPython", "Python"),
-    ("\vPython", "Python"),
-    ("\fPython", "Python"),
-    ("\u2005Python", "Python"),
+    pytest.param("\tPython", "Python",
+                 marks=pytest.mark.xfail(strict=True, reason="BR-3")),
+    pytest.param("\nPython", "Python",
+                 marks=pytest.mark.xfail(strict=True, reason="BR-3")),
+    pytest.param("\rPython", "Python",
+                 marks=pytest.mark.xfail(strict=True, reason="BR-3")),
+    pytest.param("\vPython", "Python",
+                 marks=pytest.mark.xfail(strict=True, reason="BR-3")),
+    pytest.param("\fPython", "Python",
+                 marks=pytest.mark.xfail(strict=True, reason="BR-3")),
+    pytest.param("\u2005Python", "Python",
+                 marks=pytest.mark.xfail(strict=True, reason="BR-3")),
 ])
 def test_trim_positive(input_str, expected):
     assert string_utils.trim(input_str) == expected
 
 
-@pytest.mark.xfail(reason="BR-4", strict=True)
+@pytest.mark.xfail(strict=True,
+                   reason="BR-4: Вместо TypeError летит AttributeError")
 @pytest.mark.negative
 @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
-def test_trim_negative_attribute_error(input_str):
-    with pytest.raises(AttributeError):
+def test_trim_raises_type_error(input_str):
+    with pytest.raises(TypeError):
         string_utils.trim(input_str)
 
 
@@ -75,7 +85,8 @@ def test_contains_positive(input_str, input_symbol, expected):
     assert string_utils.contains(input_str, input_symbol) == expected
 
 
-@pytest.mark.xfail(reason="BR-5", strict=True)
+@pytest.mark.xfail(strict=True,
+                   reason="BR-5: Вместо TypeError летит AttributeError")
 @pytest.mark.negative
 @pytest.mark.parametrize("input_str, input_symbol", [
     (None, 'a'),
@@ -84,23 +95,23 @@ def test_contains_positive(input_str, input_symbol, expected):
     (True, 'a'),
     ({},   'a'),
 ])
-def test_contains_negative_attribute_error(input_str, input_symbol):
-    with pytest.raises(AttributeError):
+def test_contains_type_error(input_str, input_symbol):
+    with pytest.raises(TypeError):
         string_utils.contains(input_str, input_symbol)
 
 
-@pytest.mark.xfail(reason="BR-6", strict=True)
+@pytest.mark.xfail(strict=True,
+                   reason="BR-6: вместо TypeError функция отрабатывает")
 @pytest.mark.negative
-@pytest.mark.parametrize("input_str, input_symbol, expected", [
-    ([], 'a', False),
-    (['a'], 'a', True),
-    ((), 'a', False),
-    (('a', 'b'), 'a', True),
+@pytest.mark.parametrize("input_str, input_symbol", [
+    ([], 'a'),
+    (['a'], 'a'),
+    ((), 'a'),
+    (('a', 'b'), 'a'),
 ])
-def test_contains_negative(input_str, input_symbol, expected):
-    print(f"input_str = {input_str}, input_symbol = {input_symbol}")
-    print(f"result = {string_utils.contains(input_str, input_symbol)}")
-    assert string_utils.contains(input_str, input_symbol) == expected
+def test_contains_raises_type_error(input_str, input_symbol):
+    with pytest.raises(TypeError):
+        string_utils.contains(input_str, input_symbol)
 
 
 @pytest.mark.negative
@@ -135,7 +146,8 @@ def test_delete_symbol_positive(input_str, input_symbol, expected):
     assert string_utils.delete_symbol(input_str, input_symbol) == expected
 
 
-@pytest.mark.xfail(reason="BR-7", strict=True)
+@pytest.mark.xfail(strict=True,
+                   reason="BR-7: Вместо TypeError летит AttributeError")
 @pytest.mark.negative
 @pytest.mark.parametrize("input_str, input_symbol", [
     (None, 'a'),
@@ -146,21 +158,19 @@ def test_delete_symbol_positive(input_str, input_symbol, expected):
     (['a'], 'a'),
     (('a', 'b'), 'a'),
 ])
-def test_delete_symbol_negative_attribute_error(input_str, input_symbol):
-    with pytest.raises(AttributeError):
+def test_delete_symbol_type_error(input_str, input_symbol):
+    with pytest.raises(TypeError):
         string_utils.delete_symbol(input_str, input_symbol)
 
 
-@pytest.mark.xfail(reason="BR-8", strict=True)
+@pytest.mark.xfail(strict=True, reason="BR-8: возвращается не str")
 @pytest.mark.negative
-@pytest.mark.parametrize("input_str, input_symbol, expected", [
-    ([], 'a', []),
-    ((), 'a', ()),
+@pytest.mark.parametrize("input_str, input_symbol", [
+    ([], 'a'),
+    ((), 'a')
 ])
-def test_delete_symbol_negative(input_str, input_symbol, expected):
-    print(f"input_str = {input_str}, input_symbol = {input_symbol}")
-    print(f"result = {string_utils.delete_symbol(input_str, input_symbol)}")
-    assert string_utils.delete_symbol(input_str, input_symbol) == expected
+def test_delete_symbol_returns_str(input_str, input_symbol):
+    assert isinstance(string_utils.delete_symbol(input_str, input_symbol), str)
 
 
 @pytest.mark.negative

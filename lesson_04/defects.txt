@@ -14,18 +14,20 @@ string_utils = StringUtils()
 
 
 @pytest.mark.parametrize("input_str, expected", [
-    ("Ночь. Улица. Фонарь. Аптека.", "Ночь. Улица. Фонарь. Аптека."),
-    ("fINISH", "FINISH"),
+    pytest.param("Ночь. Улица. Фонарь. Аптека", "Ночь. Улица. Фонарь. Аптека",
+                 marks=pytest.mark.xfail(strict=True, reason="BR-1")),
+    pytest.param("fINISH", "FINISH",
+                 marks=pytest.mark.xfail(strict=True, reason="BR-1")),
 ])
 def test_capitalize_positive(input_str, expected):
     assert string_utils.capitalize(input_str) == expected
-3. Запустить тесты в терминале с помощью команды pytest.
+3. Запустить тесты в терминале с помощью команды pytest --runxfail.
 
 Ожидаемый результат (ОР):
-1. Функция должна возвращать строку без изменений при input_str = "Ночь. Улица. Фонарь. Аптека.".
+1. Функция должна возвращать строку без изменений при input_str = "Ночь. Улица. Фонарь. Аптека".
 2. Функция должна возвращать строку "FINISH" при input_str = "fINISH".
 Фактический результат (ФР):
-1. Функция возвращает строку "Ночь. улица. фонарь. аптека." при input_str = "Ночь. Улица. Фонарь. Аптека.".
+1. Функция возвращает строку "Ночь. улица. фонарь. аптека" при input_str = "Ночь. Улица. Фонарь. Аптека".
 2. Функция возвращает строку "Finish" при input_str = "fINISH".
 
 Серьезность: S3 Major
@@ -35,30 +37,34 @@ def test_capitalize_positive(input_str, expected):
 
 Логи:
 
-1. 'Ночь. Улица. Фонарь. Аптека.'
-input_str = 'Ночь. Улица. Фонарь. Аптека.', expected = 'Ночь. Улица. Фонарь. Аптека.'
+1. 'Ночь. Улица. Фонарь. Аптека'
+input_str = 'Ночь. Улица. Фонарь. Аптека', expected = 'Ночь. Улица. Фонарь. Аптека'
 
     @pytest.mark.parametrize("input_str, expected", [
-        ("Ночь. Улица. Фонарь. Аптека.", "Ночь. Улица. Фонарь. Аптека."),
-        ("fINISH", "FINISH"),
+        pytest.param("Ночь. Улица. Фонарь. Аптека", "Ночь. Улица. Фонарь. Аптека",
+                     marks=pytest.mark.xfail(strict=True, reason="BR-1")),
+        pytest.param("fINISH", "FINISH",
+                     marks=pytest.mark.xfail(strict=True, reason="BR-1")),
     ])
     def test_capitalize_positive(input_str, expected):
 >       assert string_utils.capitalize(input_str) == expected
-E       AssertionError: assert 'Ночь. улица. фонарь. аптека.' == 'Ночь. Улица. Фонарь. Аптека.'
+E       AssertionError: assert 'Ночь. улица. фонарь. аптека' == 'Ночь. Улица. Фонарь. Аптека'
 E
-E         - Ночь. Улица. Фонарь. Аптека.
+E         - Ночь. Улица. Фонарь. Аптека
 E         ?       ^      ^       ^
-E         + Ночь. улица. фонарь. аптека.
+E         + Ночь. улица. фонарь. аптека
 E         ?       ^      ^       ^
 
-lesson_04\test_string_utils.py:13: AssertionError
+lesson_04\test_string_utils.py:15: AssertionError
 
 2. 'fINISH'
 input_str = 'fINISH', expected = 'FINISH'
 
     @pytest.mark.parametrize("input_str, expected", [
-        ("Ночь. Улица. Фонарь. Аптека.", "Ночь. Улица. Фонарь. Аптека."),
-        ("fINISH", "FINISH"),
+        pytest.param("Ночь. Улица. Фонарь. Аптека", "Ночь. Улица. Фонарь. Аптека",
+                     marks=pytest.mark.xfail(strict=True, reason="BR-1")),
+        pytest.param("fINISH", "FINISH",
+                     marks=pytest.mark.xfail(strict=True, reason="BR-1")),
     ])
     def test_capitalize_positive(input_str, expected):
 >       assert string_utils.capitalize(input_str) == expected
@@ -67,7 +73,7 @@ E
 E         - FINISH
 E         + Finish
 
-lesson_04\test_string_utils.py:13: AssertionError
+lesson_04\test_string_utils.py:15: AssertionError
 
 BR-2. Название: Отсутствует атрибут capitalize у переменной input_str типа, отличного от строкового, в функции capitalize при выполнении команды pytest.
 Описание: В методе capitalize класса StringUtils отсутствует проверка на соответствие переменной input_str типу str. Происходит изменение типа на другой (NoneType, int, float, bool, list, tuple, dict), в котором нет атрибута capitalize.
@@ -81,14 +87,14 @@ from string_utils import StringUtils
 
 string_utils = StringUtils()
 
-# Комментарий строки для печати traceback в консоль
-# @pytest.mark.xfail(reason="BR-2", strict=True)
+
+@pytest.mark.xfail(strict=True,
+                   reason="BR-2: Вместо TypeError летит AttributeError")
 @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
-def test_capitalize_negative_attribute_error(input_str):
-    # Комментарий строки для печати traceback в консоль
-    # with pytest.raises(TypeError):
-    string_utils.capitalize(input_str)
-3. Запустить тесты в терминале с помощью команды pytest.
+def test_capitalize_raises_type_error(input_str):
+    with pytest.raises(TypeError):
+        string_utils.capitalize(input_str)
+3. Запустить тесты в терминале с помощью команды pytest --runxfail.
 
 Ожидаемый результат (ОР): Вызов ошибки TypeError "Неверный тип данных, должен быть 'str'."
 Фактический результат (ФР): Вызов ошибки AttributeError
@@ -110,16 +116,17 @@ def test_capitalize_negative_attribute_error(input_str):
 1. NoneType - None (аналогично для типов int - 123, float - 4.56, bool - True, list - [], tuple - (), dict - {})
 input_str = None
 
+    @pytest.mark.xfail(strict=True,
+                       reason="BR-2: Вместо TypeError летит AttributeError")
     @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
-    def test_capitalize_negative_attribute_error(input_str):
-        # Комментарий строки для печати traceback в консоль
-        # with pytest.raises(TypeError):
->       string_utils.capitalize(input_str)
+    def test_capitalize_raises_type_error(input_str):
+        with pytest.raises(TypeError):
+>           string_utils.capitalize(input_str)
 
-lesson_04\test_string_utils.py:14:
+lesson_04\test_string_utils.py:13:
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-self = <string_utils.StringUtils object at 0x000001D72835EF90>, string = None
+self = <string_utils.StringUtils object at 0x0000022C7A7E6F90>, string = None
 
     def capitalize(self, string: str) -> str:
         """
@@ -147,16 +154,22 @@ string_utils = StringUtils()
 
 
 @pytest.mark.parametrize("input_str, expected", [
-    ("\tPython", "Python"),
-    ("\nPython", "Python"),
-    ("\rPython", "Python"),
-    ("\vPython", "Python"),
-    ("\fPython", "Python"),
-    ("\u2005Python", "Python"),
+    pytest.param("\tPython", "Python",
+                 marks=pytest.mark.xfail(strict=True, reason="BR-3")),
+    pytest.param("\nPython", "Python",
+                 marks=pytest.mark.xfail(strict=True, reason="BR-3")),
+    pytest.param("\rPython", "Python",
+                 marks=pytest.mark.xfail(strict=True, reason="BR-3")),
+    pytest.param("\vPython", "Python",
+                 marks=pytest.mark.xfail(strict=True, reason="BR-3")),
+    pytest.param("\fPython", "Python",
+                 marks=pytest.mark.xfail(strict=True, reason="BR-3")),
+    pytest.param("\u2005Python", "Python",
+                 marks=pytest.mark.xfail(strict=True, reason="BR-3")),
 ])
 def test_trim_positive(input_str, expected):
     assert string_utils.trim(input_str) == expected
-3. Запустить тесты в терминале с помощью команды pytest.
+3. Запустить тесты в терминале с помощью команды pytest --runxfail.
 
 Ожидаемый результат (ОР):
 1. Функция должна удалять пробельный символ \t при input_str = "\tPython".
@@ -184,22 +197,28 @@ def test_trim_positive(input_str, expected):
 input_str = '\tPython', expected = 'Python'
 
     @pytest.mark.parametrize("input_str, expected", [
-        ("\tPython", "Python"),
-        ("\nPython", "Python"),
-        ("\rPython", "Python"),
-        ("\vPython", "Python"),
-        ("\fPython", "Python"),
-        ("\u2005Python", "Python"),
+        pytest.param("\tPython", "Python",
+                     marks=pytest.mark.xfail(strict=True, reason="BR-3")),
+        pytest.param("\nPython", "Python",
+                     marks=pytest.mark.xfail(strict=True, reason="BR-3")),
+        pytest.param("\rPython", "Python",
+                     marks=pytest.mark.xfail(strict=True, reason="BR-3")),
+        pytest.param("\vPython", "Python",
+                     marks=pytest.mark.xfail(strict=True, reason="BR-3")),
+        pytest.param("\fPython", "Python",
+                     marks=pytest.mark.xfail(strict=True, reason="BR-3")),
+        pytest.param("\u2005Python", "Python",
+                     marks=pytest.mark.xfail(strict=True, reason="BR-3")),
     ])
     def test_trim_positive(input_str, expected):
 >       assert string_utils.trim(input_str) == expected
 E       AssertionError: assert '\tPython' == 'Python'
-E         
+E
 E         - Python
 E         +     Python
 E         ? +
 
-lesson_04\test_string_utils.py:17: AssertionError
+lesson_04\test_string_utils.py:23: AssertionError
 
 BR-4. Название: Отсутствует атрибут startswith у переменной input_str типа, отличного от строкового, в функции trim при выполнении команды pytest.
 Описание: В методе trim класса StringUtils отсутствует проверка на соответствие переменной input_str типу str. Происходит изменение типа на другой (NoneType, int, float, bool, list, tuple, dict), в котором нет атрибута startswith.
@@ -214,14 +233,13 @@ from string_utils import StringUtils
 string_utils = StringUtils()
 
 
-# Комментарий строки для печати traceback в консоль
-# @pytest.mark.xfail(reason="BR-4", strict=True)
+@pytest.mark.xfail(strict=True,
+                   reason="BR-4: Вместо TypeError летит AttributeError")
 @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
-def test_trim_negative_attribute_error(input_str):
-    # Комментарий строки для печати traceback в консоль
-    # with pytest.raises(AttributeError):
-    string_utils.trim(input_str)
-3. Запустить тесты в терминале с помощью команды pytest.
+def test_trim_raises_type_error(input_str):
+    with pytest.raises(TypeError):
+        string_utils.trim(input_str)
+3. Запустить тесты в терминале с помощью команды pytest --runxfail.
 
 Ожидаемый результат (ОР): Вызов ошибки TypeError "Неверный тип данных, должен быть 'str'."
 Фактический результат (ФР): Вызов ошибки AttributeError
@@ -243,16 +261,17 @@ def test_trim_negative_attribute_error(input_str):
 1. NoneType - None (аналогично для типов int - 123, float - 4.56, bool - True, list - [], tuple - (), dict - {})
 input_str = None
 
+    @pytest.mark.xfail(strict=True,
+                       reason="BR-4: Вместо TypeError летит AttributeError")
     @pytest.mark.parametrize("input_str", [None, 123, 4.56, True, [], (), {}])
-    def test_trim_negative_attribute_error(input_str):
-        # Комментарий строки для печати traceback в консоль
-        # with pytest.raises(AttributeError):
->       string_utils.trim(input_str)
+    def test_trim_raises_type_error(input_str):
+        with pytest.raises(TypeError):
+>           string_utils.trim(input_str)
 
-lesson_04\test_string_utils.py:14:
+lesson_04\test_string_utils.py:13:
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-self = <string_utils.StringUtils object at 0x00000208EE4D2F90>, string = None
+self = <string_utils.StringUtils object at 0x0000018AC5146F90>, string = None
 
     def trim(self, string: str) -> str:
         """
@@ -279,8 +298,9 @@ from string_utils import StringUtils
 
 string_utils = StringUtils()
 
-# Комментарий строки для печати traceback в консоль
-# @pytest.mark.xfail(reason="BR-5", strict=True)
+
+@pytest.mark.xfail(strict=True,
+                   reason="BR-5: Вместо TypeError летит AttributeError")
 @pytest.mark.parametrize("input_str, input_symbol", [
     (None, 'a'),
     (123,  'a'),
@@ -288,11 +308,10 @@ string_utils = StringUtils()
     (True, 'a'),
     ({},   'a'),
 ])
-def test_contains_negative_attribute_error(input_str, input_symbol):
-    # Комментарий строки для печати traceback в консоль
-    # with pytest.raises(AttributeError):
-    string_utils.contains(input_str, input_symbol)
-3. Запустить тесты в терминале с помощью команды pytest.
+def test_contains_type_error(input_str, input_symbol):
+    with pytest.raises(TypeError):
+        string_utils.contains(input_str, input_symbol)
+3. Запустить тесты в терминале с помощью команды pytest --runxfail.
 
 Ожидаемый результат (ОР): Вызов ошибки TypeError "Неверный тип данных, должен быть 'str'."
 Фактический результат (ФР): Вызов ошибки AttributeError
@@ -312,6 +331,8 @@ def test_contains_negative_attribute_error(input_str, input_symbol):
 1. NoneType - None (аналогично для типов int - 123, float - 4.56, bool - True, dict - {})
 input_str = None, input_symbol = 'a'
 
+    @pytest.mark.xfail(strict=True,
+                       reason="BR-5: Вместо TypeError летит AttributeError")
     @pytest.mark.parametrize("input_str, input_symbol", [
         (None, 'a'),
         (123,  'a'),
@@ -319,15 +340,14 @@ input_str = None, input_symbol = 'a'
         (True, 'a'),
         ({},   'a'),
     ])
-    def test_contains_negative_attribute_error(input_str, input_symbol):
-        # Комментарий строки для печати traceback в консоль
-        # with pytest.raises(AttributeError):
->       string_utils.contains(input_str, input_symbol)
+    def test_contains_type_error(input_str, input_symbol):
+        with pytest.raises(TypeError):
+>           string_utils.contains(input_str, input_symbol)
 
 lesson_04\test_string_utils.py:19:
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-self = <string_utils.StringUtils object at 0x000002389BE8EF90>, string = None, symbol = 'a'
+self = <string_utils.StringUtils object at 0x0000025D231F6F90>, string = None, symbol = 'a'
 
     def contains(self, string: str, symbol: str) -> bool:
         """
@@ -360,18 +380,18 @@ from string_utils import StringUtils
 string_utils = StringUtils()
 
 
-@pytest.mark.xfail(reason="BR-6", strict=True)
-@pytest.mark.parametrize("input_str, input_symbol, expected", [
-    ([],   'a', False),
-    (['a'],   'a', True),
-    ((), 'a', False),
-    (('a','b'), 'a', True),
+@pytest.mark.xfail(strict=True,
+                   reason="BR-6: вместо TypeError функция отрабатывает")
+@pytest.mark.parametrize("input_str, input_symbol", [
+    ([], 'a'),
+    (['a'], 'a'),
+    ((), 'a'),
+    (('a', 'b'), 'a'),
 ])
-def test_contains_negative(input_str, input_symbol, expected):
-    print(f"input_str = {input_str}, input_symbol = {input_symbol}")
-    print(f"result = {string_utils.contains(input_str, input_symbol)}")
-    assert string_utils.contains(input_str, input_symbol) == expected
-3. Запустить тесты в терминале с помощью команды pytest.
+def test_contains_raises_type_error(input_str, input_symbol):
+    with pytest.raises(TypeError):
+        string_utils.contains(input_str, input_symbol)
+3. Запустить тесты в терминале с помощью команды pytest --runxfail.
 
 Ожидаемый результат (ОР): Вызов ошибки TypeError "Неверный тип данных, должен быть 'str'."
 Фактический результат (ФР): Ошибка не вызывается. Функция выполняется успешно и возвращает результат логического типа.
@@ -387,29 +407,23 @@ def test_contains_negative(input_str, input_symbol, expected):
 
 Логи:
 
-1. [], 'a'
-[XPASS(strict)] BR-6
--------------------------------------------------------------------------------- Captured stdout call --------------------------------------------------------------------------------
-input_str = [], input_symbol = a
-result = False
+1. [], 'a' ( аналогично для наборов: 1) ['a'], 'a', 2) (), 'a', 3) ('a', 'b'), 'a' )
+input_str = [], input_symbol = 'a'
 
-2. ['a'], 'a'
-[XPASS(strict)] BR-6
--------------------------------------------------------------------------------- Captured stdout call --------------------------------------------------------------------------------
-input_str = ['a'], input_symbol = a
-result = True
+    @pytest.mark.xfail(strict=True,
+                       reason="BR-6: вместо TypeError функция отрабатывает")
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        ([], 'a'),
+        (['a'], 'a'),
+        ((), 'a'),
+        (('a', 'b'), 'a'),
+    ])
+    def test_contains_raises_type_error(input_str, input_symbol):
+>       with pytest.raises(TypeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE TypeError
 
-3. (), 'a'
-[XPASS(strict)] BR-6
--------------------------------------------------------------------------------- Captured stdout call --------------------------------------------------------------------------------
-input_str = (), input_symbol = a
-result = False
-
-4. ('a', 'b'), 'a'
-[XPASS(strict)] BR-6
--------------------------------------------------------------------------------- Captured stdout call --------------------------------------------------------------------------------
-input_str = ('a', 'b'), input_symbol = a
-result = True
+lesson_04\test_string_utils.py:17: Failed
 
 BR-7. Название: Отсутствуют атрибуты index и replace у переменной input_str типа, отличного от строкового, в функции delete_symbol при выполнении команды pytest.
 Описание: В методе delete_symbol класса StringUtils отсутствует проверка на соответствие переменной input_str типу str. Происходит изменение типа на другой (NoneType, int, float, bool, list, tuple, dict). У типов NoneType, int, float, bool, dict нет атрибута index, у list, tuple нет атрибута replace.
@@ -424,8 +438,8 @@ from string_utils import StringUtils
 string_utils = StringUtils()
 
 
-# Комментарий строки для печати traceback в консоль
-# @pytest.mark.xfail(reason="BR-7", strict=True)
+@pytest.mark.xfail(strict=True,
+                   reason="BR-7: Вместо TypeError летит AttributeError")
 @pytest.mark.parametrize("input_str, input_symbol", [
     (None, 'a'),
     (123,  'a'),
@@ -435,11 +449,10 @@ string_utils = StringUtils()
     (['a'], 'a'),
     (('a', 'b'), 'a'),
 ])
-def test_delete_symbol_negative_attribute_error(input_str, input_symbol):
-    # Комментарий строки для печати traceback в консоль
-    # with pytest.raises(AttributeError):
-    string_utils.delete_symbol(input_str, input_symbol)
-3. Запустить тесты в терминале с помощью команды pytest.
+def test_delete_symbol_type_error(input_str, input_symbol):
+    with pytest.raises(TypeError):
+        string_utils.delete_symbol(input_str, input_symbol)
+3. Запустить тесты в терминале с помощью команды pytest --runxfail.
 
 Ожидаемый результат (ОР): Вызов ошибки TypeError "Неверный тип данных, должен быть 'str'."
 Фактический результат (ФР): Вызов ошибки AttributeError
@@ -461,6 +474,8 @@ def test_delete_symbol_negative_attribute_error(input_str, input_symbol):
 1. NoneType - None (аналогично для типов int - 123, float - 4.56, bool - True, dict - {})
 input_str = None, input_symbol = 'a'
 
+    @pytest.mark.xfail(strict=True,
+                       reason="BR-7: Вместо TypeError летит AttributeError")
     @pytest.mark.parametrize("input_str, input_symbol", [
         (None, 'a'),
         (123,  'a'),
@@ -470,19 +485,18 @@ input_str = None, input_symbol = 'a'
         (['a'], 'a'),
         (('a', 'b'), 'a'),
     ])
-    def test_delete_symbol_negative_attribute_error(input_str, input_symbol):
-        # Комментарий строки для печати traceback в консоль
-        # with pytest.raises(AttributeError):
->       string_utils.delete_symbol(input_str, input_symbol)
+    def test_delete_symbol_type_error(input_str, input_symbol):
+        with pytest.raises(TypeError):
+>           string_utils.delete_symbol(input_str, input_symbol)
 
-lesson_04\test_string_utils.py:22:
+lesson_04\test_string_utils.py:21:
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 lesson_04\string_utils.py:51: in delete_symbol
     if self.contains(string, symbol):
        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-self = <string_utils.StringUtils object at 0x000002A2452A2F90>, string = None, symbol = 'a'
+self = <string_utils.StringUtils object at 0x000001A020A06F90>, string = None, symbol = 'a'
 
     def contains(self, string: str, symbol: str) -> bool:
         """
@@ -505,6 +519,8 @@ lesson_04\string_utils.py:36: AttributeError
 2. ['a'] (аналогично для ('a', 'b'))
 input_str = ['a'], input_symbol = 'a'
 
+    @pytest.mark.xfail(strict=True,
+                       reason="BR-7: Вместо TypeError летит AttributeError")
     @pytest.mark.parametrize("input_str, input_symbol", [
         (None, 'a'),
         (123,  'a'),
@@ -514,15 +530,14 @@ input_str = ['a'], input_symbol = 'a'
         (['a'], 'a'),
         (('a', 'b'), 'a'),
     ])
-    def test_delete_symbol_negative_attribute_error(input_str, input_symbol):
-        # Комментарий строки для печати traceback в консоль
-        # with pytest.raises(AttributeError):
->       string_utils.delete_symbol(input_str, input_symbol)
+    def test_delete_symbol_type_error(input_str, input_symbol):
+        with pytest.raises(TypeError):
+>           string_utils.delete_symbol(input_str, input_symbol)
 
-lesson_04\test_string_utils.py:22:
+lesson_04\test_string_utils.py:21:
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-self = <string_utils.StringUtils object at 0x000002A2452A2F90>, string = ['a'], symbol = 'a'
+self = <string_utils.StringUtils object at 0x000001A020A06F90>, string = ['a'], symbol = 'a'
 
     def delete_symbol(self, string: str, symbol: str) -> str:
         """
@@ -553,16 +568,14 @@ from string_utils import StringUtils
 string_utils = StringUtils()
 
 
-@pytest.mark.xfail(reason="BR-8", strict=True)
-@pytest.mark.parametrize("input_str, input_symbol, expected", [
-    ([], 'a', []),
-    ((), 'a', ()),
+@pytest.mark.xfail(strict=True, reason="BR-8: возвращается не str")
+@pytest.mark.parametrize("input_str, input_symbol", [
+    ([], 'a'),
+    ((), 'a')
 ])
-def test_delete_symbol_negative(input_str, input_symbol, expected):
-    print(f"input_str = {input_str}, input_symbol = {input_symbol}")
-    print(f"result = {string_utils.delete_symbol(input_str, input_symbol)}")
-    assert string_utils.delete_symbol(input_str, input_symbol) == expected
-3. Запустить тесты в терминале с помощью команды pytest.
+def test_delete_symbol_returns_str(input_str, input_symbol):
+    assert isinstance(string_utils.delete_symbol(input_str, input_symbol), str)
+3. Запустить тесты в терминале с помощью команды pytest --runxfail.
 
 Ожидаемый результат (ОР): Вызов ошибки TypeError "Неверный тип данных, должен быть 'str'."
 Фактический результат (ФР):  Функция выполняется успешно и возвращает результат типа, отличного от строкового (list, tuple).
@@ -577,13 +590,35 @@ def test_delete_symbol_negative(input_str, input_symbol, expected):
 Логи:
 
 1. []
-[XPASS(strict)] BR-8
--------------------------------------------------------------------------------- Captured stdout call --------------------------------------------------------------------------------
-input_str = [], input_symbol = a
-result = []
+input_str = [], input_symbol = 'a'
+
+    @pytest.mark.xfail(strict=True, reason="BR-8: возвращается не str")
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        ([], 'a'),
+        ((), 'a')
+    ])
+    def test_delete_symbol_returns_str(input_str, input_symbol):
+>       assert isinstance(string_utils.delete_symbol(input_str, input_symbol), str)
+E       AssertionError: assert False
+E        +  where False = isinstance([], str)
+E        +    where [] = delete_symbol([], 'a')
+E        +      where delete_symbol = <string_utils.StringUtils object at 0x000002CFBA016F90>.delete_symbol
+
+lesson_04\test_string_utils.py:14: AssertionError
 
 2. ()
-[XPASS(strict)] BR-8
--------------------------------------------------------------------------------- Captured stdout call --------------------------------------------------------------------------------
-input_str = (), input_symbol = a
-result = ()
+input_str = (), input_symbol = 'a'
+
+    @pytest.mark.xfail(strict=True, reason="BR-8: возвращается не str")
+    @pytest.mark.parametrize("input_str, input_symbol", [
+        ([], 'a'),
+        ((), 'a')
+    ])
+    def test_delete_symbol_returns_str(input_str, input_symbol):
+>       assert isinstance(string_utils.delete_symbol(input_str, input_symbol), str)
+E       AssertionError: assert False
+E        +  where False = isinstance((), str)
+E        +    where () = delete_symbol((), 'a')
+E        +      where delete_symbol = <string_utils.StringUtils object at 0x000002CFBA016F90>.delete_symbol
+
+lesson_04\test_string_utils.py:14: AssertionError
