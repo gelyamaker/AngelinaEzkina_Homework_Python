@@ -30,6 +30,7 @@ class CalcPage:
                 By.XPATH, f"//span[text()='{btn}']").click()
 
     def output_result(self, result):
-        return self.wait.until(
+        self.wait.until(
             EC.text_to_be_present_in_element(self.RESULT_TEXT, result
                                              ))
+        return self.driver.find_element(*self.RESULT_TEXT).text

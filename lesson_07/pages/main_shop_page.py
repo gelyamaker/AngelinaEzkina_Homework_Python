@@ -9,9 +9,6 @@ class MainShopPage:
     def __init__(self, driver):
         self.driver = driver
         self.wait = WebDriverWait(driver, 10)
-        self.inventory_items = [
-
-        ]
 
     def add_to_cart(self, *inventory_items):
         for item in inventory_items:

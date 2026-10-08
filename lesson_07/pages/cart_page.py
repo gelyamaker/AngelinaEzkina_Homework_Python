@@ -11,13 +11,10 @@ class CartPage:
         self.driver = driver
         self.wait = WebDriverWait(driver, 10)
 
-    def check_cart(self, *names_text):
+    def check_cart(self):
         inventory_items = self.driver.find_elements(
             *self.INVENTORY_ITEM_NAME_SELECTOR)
-        for name, item in zip(names_text, inventory_items):
-            if name not in item.text:
-                return False
-        return True
+        return [item.text for item in inventory_items]
 
     def click_checkout(self):
         self.wait.until(EC.element_to_be_clickable(

@@ -1,3 +1,4 @@
+import pytest
 from selenium import webdriver
 from pages.login_shop_page import LoginShopPage
 from pages.main_shop_page import MainShopPage
@@ -5,9 +6,15 @@ from pages.cart_page import CartPage
 from pages.order_page import OrderPage
 
 
-def test_02_shop():
+@pytest.fixture
+def driver():
     driver = webdriver.Firefox()
     driver.maximize_window()
+    yield driver
+    driver.quit()
+
+
+def test_02_shop(driver):
 
     login_shop = LoginShopPage(driver)
     login_shop.open()
@@ -20,16 +27,15 @@ def test_02_shop():
     main_shop.open_cart()
 
     cart = CartPage(driver)
-    assert cart.check_cart("Sauce Labs Backpack",
-                           "Sauce Labs Bolt T-Shirt",
-                           "Sauce Labs Onesie"), \
+    expected = ["Sauce Labs Backpack",
+                "Sauce Labs Bolt T-Shirt",
+                "Sauce Labs Onesie"]
+    assert cart.check_cart() == expected, \
         "Список товаров не соответствует заявленному"
     cart.click_checkout()
 
     order = OrderPage(driver)
     order.fill_form("Ангелина", "Езкина", "129594")
     summary_total_label = order.read_summary()
-
-    driver.quit()
 
     assert "$58.29" in summary_total_label, "Итоговая сумма не равна $58.29"
