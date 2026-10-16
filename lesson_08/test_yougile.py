@@ -1,7 +1,7 @@
 from yougile_project import YougileProject
 
 
-base_url = 'https://ru.yougile.com/'
+base_url = 'https://ru.yougile.com'
 
 project = YougileProject(base_url)
 
@@ -53,8 +53,8 @@ def test_create_project():
     helper_delete_project(project_id, title)
 
 
-# 2. Создание проекта с пустым заголовком
-def test_create_project_with_empty_title():
+# 2. Создание проекта с заголовком 123
+def test_create_project_with_int_title():
 
     # Создать проект с заголовком 123
     title = 123
