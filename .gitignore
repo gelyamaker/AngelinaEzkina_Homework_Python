@@ -220,3 +220,7 @@ __marimo__/
 # Python Files
 /lesson_08/config.py
 /lesson_09/config.py
+
+# Allure Directories
+/lesson_10/allure-result
+/lesson_10/allure-report
